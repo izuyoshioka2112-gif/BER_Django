@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}商品詳細{% endblock title %}
+
+{% block content %}
+<div class="card-body">
+    <h5 class="card-name">{{object.name}}</h5>
+    <div class="card-body">
+        <p class="card-price">{{object.price}}p</p>
+        <h6 class="card-category">{{ item.category }}</h6>
+        <a href="{% url 'product' %}" class="btn btn-primary">カートに入れる</a>
+        <a href="{% url 'product' %}" class="btn btn-primary">戻る</a>
+    </div>
+</div>
+</div>
+{% endblock content %}
