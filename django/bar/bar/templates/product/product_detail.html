@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}商品詳細{% endblock title %}
+
+{% block content %}
+<div class="card-body">
+    <h5 class="card-name">{{object.name}}</h5>
+    <div class="card-body">
+        <p class="card-price">{{object.price}}p</p>
+        <h6 class="card-category">{{ object.category }}</h6>
+        <select id="quantity" name="quantity" class="form-select">
+            {% for i in quantity_range %}
+            <option value="{{ i }}">{{ i }}</option>
+            {% endfor %}
+        </select>
+        <button type="button" onclick="addToCart({{ object.id }}, document.getElementById('quantity').value)"
+            class="btn btn-primary">カートに入れる</button>
+        <a href="{% url 'product' %}" class="btn btn-primary">戻る</a>
+    </div>
+</div>
+{% endblock content %}

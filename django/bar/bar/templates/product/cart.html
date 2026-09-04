@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}カート{% endblock title %}
+
+{% block content %}
+<h2>カート</h2>
+{% for item in cart_items %}
+<div class="cart-body">
+    <p>{{ item.product.name }} ：　{{ item.quantity }}個</p>
+    <p>小計：{{ item.subtotal }}円</p>
+</div>
+{% endfor %}
+<p>合計：{{ total_price }}円</p>
+{% endblock content %}
