@@ -4,13 +4,13 @@
 
 {% block content %}
 {% for item in object_list %}
-<div class="card" style="width: 18rem;">
+<div class="card">
     <div class="card-body">
         <h5 class="card-name">{{item.name}}</h5>
         <div class="card-body">
             <p class="card-price">{{item.price}}p</p>
-            <a href="{% url 'product_detail' item.id %}" class="btn btn-primary">商品詳細</a>
             <h6 class="card-category">{{ item.category }}</h6>
+            <a href="{% url 'product_detail' item.id %}" class="btn btn-primary">商品追加</a>
         </div>
     </div>
 </div>

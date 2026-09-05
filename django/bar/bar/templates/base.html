@@ -10,6 +10,15 @@
 </head>
 
 <body>
+    <nav class="navbar navber-dark bg-success sticky-top">
+        <h2 class="mx-5">BAR</h2>
+        <div class="navber-nav d-flex flex-row ms-auto">
+        <a class="nav-link mx-3" href="{% url 'product' %}">商品一覧</a>
+        <a class="nav-link mx-3" href="{% url 'cart' %}">カート</a>
+        </div>
+        <div class="p-4">
+        <h1>{% block h1 %}{% endblock %}</h1>
+    </nav>
     {% block content %}{% endblock content %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"

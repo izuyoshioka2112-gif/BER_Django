@@ -9,7 +9,7 @@ from django.http import JsonResponse
 
 class ListProductView(ListView):
     template_name = "product/product_list.html"
-    model = Product
+    queryset = Product.objects.order_by('category')
 
 
 class DetailListProductView(DetailView):
