@@ -1,13 +1,21 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}カート{% endblock title %}
 
 {% block content %}
 <h2>カート</h2>
+
 {% for item in cart_items %}
-<div class="cart-body">
-    <p>{{ item.product.name }} ：　{{ item.quantity }}個</p>
+<div class="cart-body" id="cart-item-{{ item.product.id }}">
+    <p>{{ item.product.name }}</p>
+    <select onchange="updateCart({{ item.product.id }}, this.value)">
+        {% for count in quantity_range %}
+        <option value="{{ count }}" {% if count == item.quantity %}selected{% endif %}>{{ count }}</option>
+        {% endfor %}
+    </select>
     <p>小計：{{ item.subtotal }}円</p>
+    <button type="button" onclick="removeFromCart({{ item.product.id }})" class="btn btn-danger">削除</button>
 </div>
 {% endfor %}
 <p>合計：{{ total_price }}円</p>
