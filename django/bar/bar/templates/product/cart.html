@@ -7,15 +7,17 @@
 <h2>カート</h2>
 
 {% for item in cart_items %}
-<div class="cart-body" id="cart-item-{{ item.product.id }}">
+<div class="cart-body mx-3">
     <p>{{ item.product.name }}</p>
     <select onchange="updateCart({{ item.product.id }}, this.value)">
+        <!-- 値が変更されるまで待つ -->
         {% for count in quantity_range %}
         <option value="{{ count }}" {% if count == item.quantity %}selected{% endif %}>{{ count }}</option>
         {% endfor %}
     </select>
     <p>小計：{{ item.subtotal }}円</p>
-    <button type="button" onclick="removeFromCart({{ item.product.id }})" class="btn btn-danger">削除</button>
+    <button type="button" onclick="removeFromCart({{ item.product.id }})" class="btn btn-danger">削除</button> 
+    <!-- 押された瞬間に実行 -->
 </div>
 {% endfor %}
 <p>合計：{{ total_price }}円</p>
