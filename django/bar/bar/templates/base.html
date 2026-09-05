@@ -53,8 +53,8 @@
             });
     }
     function removeFromCart(productId) {
-        const isConfirmed = confirm('本当に削除しますか？');
-        if (!isConfirmed) {
+        const confirmation = confirm('本当に削除しますか？');
+        if (!confirmation) {
             return;  // キャンセルされたら、ここで処理を止める
         }
         fetch('/cart/remove/', {

@@ -63,16 +63,14 @@ def cart_view(request):
 
 
 def update_cart_api(request):
-    if request.merhod == "POST":
+    if request.method == "POST":
         data = json.loads(request.body)
         product_id = str(data.get("product_id"))
         quantity = int(data.get("quantity", 1))
         cart = request.session.get("cart", {})
         if product_id in cart:
             cart[product_id] = quantity
-            request.session["cart"] = (
-                cart  # このユーザー専用のデータ保管庫(request.session)に更新点を追加
-            )
+            request.session["cart"] = cart  # このユーザー専用のデータ保管庫(request.session)に更新点を追加
             request.session.modified = True
         return JsonResponse({"status": "ok", "cart": cart})
     return JsonResponse({"status": "error"}, status=400)
