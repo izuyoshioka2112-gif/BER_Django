@@ -29,12 +29,50 @@
             })
         })
             .then(response => response.json())
-            .then(date => {
-                console.log('保存できた', date);
+            .then(data => {
+                console.log('保存できた', data);
                 // alert('カートに追加しました');
                 window.location.href = "/product/";
             })
     }
+    function updateCart(product_Id, quantity) {
+        fetch('/cart/update/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                product_id: product_Id,
+                quantity: quantity
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                location.reload(); // ページを再読み込みする
+            });
+    }
+    function removeFromCart(productId) {
+        const isConfirmed = confirm('本当に削除しますか？');
+        if (!isConfirmed) {
+            return;  // キャンセルされたら、ここで処理を止める
+        }
+        fetch('/cart/remove/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application_json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                product_id: productId
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                location.reload();
+            });
+    }
+    // データそのものの扱い
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {

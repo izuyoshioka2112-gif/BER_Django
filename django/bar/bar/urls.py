@@ -10,4 +10,6 @@ urlpatterns = [
     ),
     path("cart/add/", views.add_to_cart_api, name="add_to_cart_api"),
     path("cart/", views.cart_view, name="cart"),
+    path("cart/update/", views.update_cart_api, name="update_cart_api"),
+    path("cart/remove/", views.remove_from_cart_api, name="remove_from_cart_api"),
 ]

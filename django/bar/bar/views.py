@@ -24,9 +24,9 @@ class DetailListProductView(DetailView):
 
 def add_to_cart_api(request):
     if request.method == "POST":
-        date = json.loads(request.body)
-        product_id = str(date.get("product_id"))
-        quantity = int(date.get("quantity", 1))
+        data = json.loads(request.body)
+        product_id = str(data.get("product_id"))
+        quantity = int(data.get("quantity", 1))
         cart = request.session.get("cart", {})
         cart[product_id] = cart.get(product_id, 0) + quantity
         request.session["cart"] = cart
@@ -57,5 +57,35 @@ def cart_view(request):
         {
             "cart_items": cart_items,
             "total_price": total_price,
+            "quantity_range": range(1, 6),
         },
     )
+
+
+def update_cart_api(request):
+    if request.merhod == "POST":
+        data = json.loads(request.body)
+        product_id = str(data.get("product_id"))
+        quantity = int(data.get("quantity", 1))
+        cart = request.session.get("cart", {})
+        if product_id in cart:
+            cart[product_id] = quantity
+            request.session["cart"] = (
+                cart  # このユーザー専用のデータ保管庫(request.session)に更新点を追加
+            )
+            request.session.modified = True
+        return JsonResponse({"status": "ok", "cart": cart})
+    return JsonResponse({"status": "error"}, status=400)
+
+
+def remove_from_cart_api(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        product_id = str(data.get("product_id"))
+        cart = request.session.get("cart", {})
+        if product_id in cart:
+            del cart[product_id]
+            request.session["cart"] = cart
+            request.session.modified = True
+        return JsonResponse({"status": "ok", "cart": cart})
+    return JsonResponse({"status": "error"}, status=400)
