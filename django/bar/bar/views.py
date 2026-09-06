@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_list_or_404
 from django.views.generic import ListView, DetailView
-from .models import Product
+from .models import Product, Staff, Order, OrderItem
 import json
 from django.http import JsonResponse
+from django.contrib import messages
 
-# Create your views here.
+# Create your views here
 
 
 class ListProductView(ListView):
@@ -87,3 +88,50 @@ def remove_from_cart_api(request):
             request.session.modified = True
         return JsonResponse({"status": "ok", "cart": cart})
     return JsonResponse({"status": "error"}, status=400)
+
+def order_confirm_view(request):
+    cart = request.session.get("cart", {})
+    if not cart:
+        messages.error(request, "商品が入っていません")
+        return redirect("cart")
+    if request.method == "POST":
+        table_number = request.POST.get("table_number")
+        staff_id = request.POST.get("staff")
+        # POST.get＝お客のブラウザから取ってきてる
+        staff = Staff.objects.get(id=staff_id)
+        # objects.get＝DBから取ってきてる
+        order = Order.objects.create(
+            table_number = table_number,
+            staff=staff,
+        )
+        for product_id, quantity in cart.items():
+            # DBを分けてるからここでくっつけてあげる（親、子）
+            product = Product.objects.get(id=product_id)
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                quantity=quantity,
+            )
+        request.session["cart"] = {}
+        request.session.modified = True
+        return redirect("order_done")
+    cart_items = []
+    total_price = 0
+    for product_id, quantity in cart.items():
+        product = Product.objects.get(id=product_id)
+        subtotal = product.price * quantity
+        total_price += subtotal
+        cart_items.append({
+            "product":product,
+            "quantity": quantity,
+            "subtotal":subtotal,
+        })
+    staff_list = Staff.objects.all()
+    return render(request, "product/order_confirm.html",{
+        "cart_items": cart_items,
+        "total_price": total_price,
+        "staff_list": staff_list,
+    })
+
+def order_done_view(request):
+    return render(request, "product/order_done.html")
