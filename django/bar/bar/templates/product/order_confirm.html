@@ -9,24 +9,28 @@
 <div class="cart-body mx-3">
     <p>{{ item.product.name }} : {{ item.quantity }}個</p>
     <p>小計:{{ item.subtotal }}p</p>
-    <h3>合計:{{ total_price }}p</h3>
     {% endfor %}
+    <h3>合計:{{ total_price }}p</h3>
 </div>
 <!-- form Djangoに送るための封筒のようなもの -->
 <form method="post">
 {% csrf_token %}
 <label for="table_number">卓番号</label>
-<input type="number" name="table_number" id="table_number" min="1" required>
-<div>
-<label for="staff">担当スタッフ</label>
-<div class="d-flex flex-wrap gap-2">
-    {% for staff in staff_list %}
-    <div class="d-flex flex-column align-items-cente">
-        <input type="radio" name="staff" id="staff-{{ staff.id }}" value="{{ staff.id }}" class="btn-check" required>
-        <img src="{{ staff.photo.url }}" alt="写メ" class="img-photo mb-1">
-        <label for="staff-{{ staff.id }}" class="btn btn-outline-primary">{{ staff.name }}</label>
-    </div>   
+<select name="table_number">
+    {% for number in table_range %}
+    <option value="{{ number }}">{{ number }}</option>
     {% endfor %}
+</select>
+<div>
+    <label for="staff">担当スタッフ</label>
+    <div class="d-flex flex-wrap gap-2">
+        {% for staff in staff_list %}
+        <div class="d-flex flex-column">
+            <img src="{{ staff.photo.url }}" alt="写メ" class="img-photo">
+            <input type="radio" name="staff" id="staff-{{ staff.id }}" value="{{ staff.id }}" class="btn-check" required>
+            <label for="staff-{{ staff.id }}" class="btn btn-outline-primary">{{ staff.name }}</label>
+        </div>   
+        {% endfor %}
     </div>
 </div>
 <button type="submit" class="btn btn-primary">注文を確定する</button>

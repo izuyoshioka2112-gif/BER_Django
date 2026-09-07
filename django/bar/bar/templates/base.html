@@ -30,6 +30,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+    <!-- トースト通知 -->
+    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+        <!-- これはどこに表示するか、外側の枠を決めてる -->
+        <div id="mainToast" class="toast align-items-center text-bg-primary border-0" role="alert">
+            <!-- これは中身 -->
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                <!-- 閉じるボタン -->
+            </div>
+        </div>
+    </div>
 </body>
 <script>
     function addToCart(productID, quantity) {
@@ -46,8 +58,11 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('保存できた', data);
-                // alert('カートに追加しました');
+                if (data.status == "error"){
+                    showToast(data.message);
+                    return;
+                }
+                sessionStorage.setItem('toastMessage', 'カートに追加しました');
                 window.location.href = "/product/";
             })
     }
@@ -76,7 +91,7 @@
         fetch('/cart/remove/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application_json',
+                'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
@@ -85,6 +100,7 @@
         })
             .then(response => response.json())
             .then(data => {
+                // ここはリロードするため、データを持ち越す必要がある
                 location.reload();
             });
     }
@@ -103,6 +119,24 @@
         }
         return cookieValue;
     }
+
+    // トースト通知
+    function showToast(message){
+        const toastEl = document.getElementById('mainToast');
+        const toastMessage = document.getElementById('toastMessage');
+        toastMessage.textContent = message;
+        const toast =new bootstrap.Toast(toastEl)
+        // 新たにオブジェクトを作るnew。だから.show()機能が存在する
+        toast.show();//自動的に消すという動きも
+    }
+    // ページを読み込むまで待つ、このページを予約しておく
+    window.addEventListener('DOMContentLoaded', function() {
+    const message = sessionStorage.getItem('toastMessage');
+    if (message) {
+        showToast(message);
+        sessionStorage.removeItem('toastMessage');
+    }
+});
 </script>
 
 </html>
