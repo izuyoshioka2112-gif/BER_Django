@@ -30,11 +30,12 @@ def add_to_cart_api(request):
         quantity = int(data.get("quantity", 1))
         cart = request.session.get("cart", {})
         cart[product_id] = cart.get(product_id, 0) + quantity
+        if cart[product_id] > 15:
+            return JsonResponse({"status": "error", "message": "商品一つにつき、15個以上の注文はできません"}, status=400)
         request.session["cart"] = cart
         request.session.modified = True
         return JsonResponse({"status": "ok", "cart": cart})
     return JsonResponse({"status": "error"}, status=400)
-
 
 def cart_view(request):
     cart = request.session.get("cart", {})
@@ -58,7 +59,7 @@ def cart_view(request):
         {
             "cart_items": cart_items,
             "total_price": total_price,
-            "quantity_range": range(1, 6),
+            "quantity_range": range(1, 16),
         },
     )
 
@@ -127,10 +128,12 @@ def order_confirm_view(request):
             "subtotal":subtotal,
         })
     staff_list = Staff.objects.all()
+    table_range = range(1, 21)
     return render(request, "product/order_confirm.html",{
         "cart_items": cart_items,
         "total_price": total_price,
         "staff_list": staff_list,
+        "table_range": table_range,
     })
 
 def order_done_view(request):
