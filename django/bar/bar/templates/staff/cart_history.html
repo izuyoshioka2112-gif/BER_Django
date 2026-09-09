@@ -4,4 +4,21 @@
 
 {% block content %}
 <h2>注文履歴</h2>
+{% for order in object_list %}
+{% if order.is_completed == True %}
+<div class="card w-100">
+    <div class="p-3">
+        <h4>指名：{{order.staff}}</h4>
+        <h4>卓番号：{{order.table_number}}</h4>
+    </div>
+    {% for item in order.items.all %}
+    <div class="card-body">
+        <h5 class="card-name">{{ item.product }}</h5>
+        <h6>{{ item.quantity }}個</h6>
+    </div>
+    {% endfor %}
+    <p>{{ order.created_at }}</p>
+</div>
+{% endif %}
+{% endfor %}
 {% endblock content %}

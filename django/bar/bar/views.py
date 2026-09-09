@@ -26,11 +26,13 @@ class DetailListProductView(DetailView):
 class StaffCartList(ListView):
     template_name = "staff/cart_list.html"
     model = Order
+    ordering = ["created_at"]
 
 
 class StaffCartHistory(ListView):
     template_name = "staff/cart_history.html"
     model = Order
+    ordering = ["-created_at"]
 
 
 def add_to_cart_api(request):

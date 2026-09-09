@@ -6,7 +6,7 @@
 <h2>注文リスト</h2>
 {% for order in object_list %}
 {% if order.is_completed == False %}
-<div class="card w-100">
+<div class="card m-3">
     <div class="p-3">
         <h4>指名：{{order.staff}}</h4>
         <h4>卓番号：{{order.table_number}}</h4>
@@ -17,6 +17,7 @@
         <h6>{{ item.quantity }}個</h6>
     </div>
     {% endfor %}
+    {{order.created_at}}
     <div class="card-footer d-flex justify-content-end bg-transparent">
         <button type="button" class="ms-auto" onclick="completeOrder({{order.id}})">完了にする</button>
     </div>
