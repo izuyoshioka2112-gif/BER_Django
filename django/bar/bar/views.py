@@ -10,7 +10,7 @@ from django.contrib import messages
 
 class ListProductView(ListView):
     template_name = "product/product_list.html"
-    queryset = Product.objects.order_by('category')
+    queryset = Product.objects.order_by("category")
 
 
 class DetailListProductView(DetailView):
@@ -23,6 +23,18 @@ class DetailListProductView(DetailView):
         return context
 
 
+class StaffCartList(ListView):
+    template_name = "staff/cart_list.html"
+    model = Order
+    ordering = ["created_at"]
+
+
+class StaffCartHistory(ListView):
+    template_name = "staff/cart_history.html"
+    model = Order
+    ordering = ["-created_at"]
+
+
 def add_to_cart_api(request):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -31,11 +43,18 @@ def add_to_cart_api(request):
         cart = request.session.get("cart", {})
         cart[product_id] = cart.get(product_id, 0) + quantity
         if cart[product_id] > 15:
-            return JsonResponse({"status": "error", "message": "商品一つにつき、15個以上の注文はできません"}, status=400)
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "商品一つにつき、15個以上の注文はできません",
+                },
+                status=400,
+            )
         request.session["cart"] = cart
         request.session.modified = True
         return JsonResponse({"status": "ok", "cart": cart})
     return JsonResponse({"status": "error"}, status=400)
+
 
 def cart_view(request):
     cart = request.session.get("cart", {})
@@ -72,7 +91,9 @@ def update_cart_api(request):
         cart = request.session.get("cart", {})
         if product_id in cart:
             cart[product_id] = quantity
-            request.session["cart"] = cart  # このユーザー専用のデータ保管庫(request.session)に更新点を追加
+            request.session["cart"] = (
+                cart  # このユーザー専用のデータ保管庫(request.session)に更新点を追加
+            )
             request.session.modified = True
         return JsonResponse({"status": "ok", "cart": cart})
     return JsonResponse({"status": "error"}, status=400)
@@ -90,6 +111,7 @@ def remove_from_cart_api(request):
         return JsonResponse({"status": "ok", "cart": cart})
     return JsonResponse({"status": "error"}, status=400)
 
+
 def order_confirm_view(request):
     cart = request.session.get("cart", {})
     if not cart:
@@ -102,7 +124,7 @@ def order_confirm_view(request):
         staff = Staff.objects.get(id=staff_id)
         # objects.get＝DBから取ってきてる
         order = Order.objects.create(
-            table_number = table_number,
+            table_number=table_number,
             staff=staff,
         )
         for product_id, quantity in cart.items():
@@ -122,19 +144,38 @@ def order_confirm_view(request):
         product = Product.objects.get(id=product_id)
         subtotal = product.price * quantity
         total_price += subtotal
-        cart_items.append({
-            "product":product,
-            "quantity": quantity,
-            "subtotal":subtotal,
-        })
+        cart_items.append(
+            {
+                "product": product,
+                "quantity": quantity,
+                "subtotal": subtotal,
+            }
+        )
     staff_list = Staff.objects.all()
     table_range = range(1, 21)
-    return render(request, "product/order_confirm.html",{
-        "cart_items": cart_items,
-        "total_price": total_price,
-        "staff_list": staff_list,
-        "table_range": table_range,
-    })
+    return render(
+        request,
+        "product/order_confirm.html",
+        {
+            "cart_items": cart_items,
+            "total_price": total_price,
+            "staff_list": staff_list,
+            "table_range": table_range,
+        },
+    )
+
 
 def order_done_view(request):
     return render(request, "product/order_done.html")
+
+
+def complete_order_api(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        # ここのbodyはjsが送ってるbody:から
+        order_id = data.get("order_id")
+        order = Order.objects.get(id=order_id)
+        order.is_completed = True
+        order.save()
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "error"}, status=400)
