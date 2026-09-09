@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock title %}BAR</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+
+<body>
+    <nav class="navbar navber-dark bg-success sticky-top">
+        <h2 class="mx-5">BAR</h2>
+        <div class="navber-nav d-flex flex-row ms-auto">
+            <a class="nav-link mx-3" href="{% url 'cart_list' %}">注文一覧</a>
+            <a class="nav-link mx-3" href="{% url 'order_history' %}">注文履歴</a>
+        </div>
+        <div class="p-4">
+            <h1>{% block h1 %}{% endblock %}</h1>
+    </nav>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock content %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+<script>
+    function completeOrder(orderId) {
+        const confirmation = confirm('本当に商品を渡しましたか？');
+        if (!confirmation) {
+            return;
+        }
+        fetch('/order/complete/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                order_id: orderId
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                location.reload();
+            });
+    }
+    // データそのものの扱い
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function confirmOrder() {
+        return confirm('この内容で注文を確定しますか？');
+    }
+</script>
+
+</html>

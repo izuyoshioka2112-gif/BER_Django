@@ -16,7 +16,11 @@ urlpatterns = [
     path("cart/remove/", views.remove_from_cart_api, name="remove_from_cart_api"),
     path("order/confirm/", views.order_confirm_view, name="order_confirm"),
     path("order/done/", views.order_done_view, name="order_done"),
+    path("cart_list/", views.StaffCartList.as_view(), name="cart_list"),
+    path("order/complete/", views.complete_order_api, name="complete_order_api"),
+    path("order_history/", views.StaffCartHistory.as_view(), name="order_history"),
 ]
+# 役割一つにつき１path
 
 # PHOTO
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
