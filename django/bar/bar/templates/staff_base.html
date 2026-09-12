@@ -15,6 +15,7 @@
         <div class="navber-nav d-flex flex-row ms-auto">
             <a class="nav-link mx-3" href="{% url 'cart_list' %}">注文一覧</a>
             <a class="nav-link mx-3" href="{% url 'order_history' %}">注文履歴</a>
+            <a class="nav-link mx-3" href="{% url 'stock' %}">在庫管理</a>
         </div>
         <div class="p-4">
             <h1>{% block h1 %}{% endblock %}</h1>
@@ -50,6 +51,23 @@
                 location.reload();
             });
     }
+
+    function stock(product_Id) {
+        fetch('/stock/toggle/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                product_id: product_Id
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                location.reload();
+            });
+    }
     // データそのものの扱い
     function getCookie(name) {
         let cookieValue = null;
@@ -64,10 +82,6 @@
             }
         }
         return cookieValue;
-    }
-
-    function confirmOrder() {
-        return confirm('この内容で注文を確定しますか？');
     }
 </script>
 

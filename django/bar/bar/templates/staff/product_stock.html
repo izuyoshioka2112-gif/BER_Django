@@ -1,0 +1,17 @@
+{% extends 'staff_base.html' %}
+
+{% block title %}在庫・タスク管理{% endblock title %}
+
+{% block content %}
+{% for item in object_list %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-name">{{item.name}}</h5>
+        <button type="button" onclick="stock({{ item.id }})"
+            class="btn {% if item.is_available %}btn-outline-dark{% else %}btn-danger{% endif %}">
+            {% if item.is_available %}在庫あり{% else %}在庫なし{% endif %}
+        </button>
+    </div>
+</div>
+{% endfor %}
+{% endblock content %}

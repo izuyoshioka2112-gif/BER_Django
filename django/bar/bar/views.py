@@ -26,13 +26,37 @@ class DetailListProductView(DetailView):
 class StaffCartList(ListView):
     template_name = "staff/cart_list.html"
     model = Order
-    ordering = ["created_at"]
+
+    def get_queryset(self):
+        # modelのOrderから商品を全て取得し、リストとしてまとめる
+        return super().get_queryset().order_by("created_at")
 
 
 class StaffCartHistory(ListView):
     template_name = "staff/cart_history.html"
     model = Order
-    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        return super().get_queryset().order_by("-created_at")
+
+
+class ProductStock(ListView):
+    template_name = "staff/product_stock.html"
+    model = Product
+
+
+def product_stock_api(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        product_id = data.get("product_id")
+        product_all = Product.objects.get(id=product_id)
+        if product_all.is_available == True:
+            product_all.is_available = False
+        else:
+            product_all.is_available = True
+        product_all.save()
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "error"}, status=400)
 
 
 def add_to_cart_api(request):
@@ -42,11 +66,11 @@ def add_to_cart_api(request):
         quantity = int(data.get("quantity", 1))
         cart = request.session.get("cart", {})
         cart[product_id] = cart.get(product_id, 0) + quantity
-        if cart[product_id] > 15:
+        if cart[product_id] > 5:
             return JsonResponse(
                 {
                     "status": "error",
-                    "message": "商品一つにつき、15個以上の注文はできません",
+                    "message": "商品一つにつき、5個以上の注文はできません",
                 },
                 status=400,
             )
@@ -78,7 +102,7 @@ def cart_view(request):
         {
             "cart_items": cart_items,
             "total_price": total_price,
-            "quantity_range": range(1, 16),
+            "quantity_range": range(1, 6),
         },
     )
 
@@ -151,8 +175,13 @@ def order_confirm_view(request):
                 "subtotal": subtotal,
             }
         )
-    staff_list = Staff.objects.all()
-    table_range = range(1, 21)
+    staff_list = staff_list = Staff.objects.filter(
+        is_active=True
+    )  # is_activeがTrueの人だけ取得
+    table_range = range(1, 5)
+    # kaunta-_range = range(1,5)
+    # テーブルが四個とカウンターが４こ
+    # テーブル個数↑
     return render(
         request,
         "product/order_confirm.html",
@@ -179,3 +208,4 @@ def complete_order_api(request):
         order.save()
         return JsonResponse({"status": "ok"})
     return JsonResponse({"status": "error"}, status=400)
+    # jsでリクエストを送った場合、レスポンスをしないといけないからreturn
