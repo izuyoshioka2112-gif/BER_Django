@@ -1,10 +1,16 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from . import views
 
+# staffログイン
+# name: bar
+# Ps: 26kdghtbar
+
 urlpatterns = [
-    path("product/", views.ListProductView.as_view(), name="product"),
+    path("", views.ListProductView.as_view(), name="product"),
+    path("staff/", auth_views.LoginView.as_view(), name="login"),
     path(
         "product/<int:pk>/detail/",
         views.DetailListProductView.as_view(),

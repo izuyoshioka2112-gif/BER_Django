@@ -4,6 +4,7 @@ from .models import Product, Staff, Order, OrderItem
 import json
 from django.http import JsonResponse
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here
 
@@ -23,7 +24,7 @@ class DetailListProductView(DetailView):
         return context
 
 
-class StaffCartList(ListView):
+class StaffCartList(LoginRequiredMixin, ListView):
     template_name = "staff/cart_list.html"
     model = Order
 
@@ -32,7 +33,7 @@ class StaffCartList(ListView):
         return super().get_queryset().order_by("created_at")
 
 
-class StaffCartHistory(ListView):
+class StaffCartHistory(LoginRequiredMixin, ListView):
     template_name = "staff/cart_history.html"
     model = Order
 
@@ -40,7 +41,7 @@ class StaffCartHistory(ListView):
         return super().get_queryset().order_by("-created_at")
 
 
-class ProductStock(ListView):
+class ProductStock(LoginRequiredMixin, ListView):
     template_name = "staff/product_stock.html"
     model = Product
 
