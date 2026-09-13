@@ -44,17 +44,32 @@ class ProductStock(ListView):
     template_name = "staff/product_stock.html"
     model = Product
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["staff_list"] = Staff.objects.all()  # スタッフ一覧を追加で渡す
+        return context
 
+
+# 商品管理
 def product_stock_api(request):
     if request.method == "POST":
         data = json.loads(request.body)
         product_id = data.get("product_id")
         product_all = Product.objects.get(id=product_id)
-        if product_all.is_available == True:
-            product_all.is_available = False
-        else:
-            product_all.is_available = True
+        product_all.is_available = not product_all.is_available
         product_all.save()
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "error"}, status=400)
+
+
+# スタッフ管理
+def staff_toggle_api(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        staff_id = data.get("staff_id")
+        staff = Staff.objects.get(id=staff_id)
+        staff.is_available = not staff.is_available
+        staff.save()
         return JsonResponse({"status": "ok"})
     return JsonResponse({"status": "error"}, status=400)
 
@@ -84,8 +99,17 @@ def cart_view(request):
     cart = request.session.get("cart", {})
     cart_items = []
     total_price = 0
+    invalid_ids = []  # 存在しなかった商品IDを覚えておくリスト
     for product_id, quantity in cart.items():
-        product = Product.objects.get(id=product_id)
+        # DBの確認
+        try:  # これを試してみてだめなら下を
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            invalid_ids.append(product_id)
+            continue
+        if not product.is_available:  # ← 在庫切れかどうかもチェック
+            invalid_ids.append(product_id)
+            continue
         subtotal = product.price * quantity
         total_price += subtotal
         cart_items.append(
@@ -95,6 +119,15 @@ def cart_view(request):
                 "subtotal": subtotal,
             }
         )
+
+        # ループが終わった後、無効なIDをカートから削除する
+    if invalid_ids:
+        for invalid_id in invalid_ids:
+            del cart[invalid_id]
+        request.session["cart"] = cart
+        # セッションに新しいカートを覚えてもらう
+        request.session.modified = True
+        # 保存したよと伝える
         # リクエストは上のものと同じで自動的にブラウザから送られてくる情報が入っている。returnで使うのは、どこに情報を送ればいいか示すためでもある。しかし、実際に送っているのはrender
     return render(
         request,
@@ -151,9 +184,14 @@ def order_confirm_view(request):
             table_number=table_number,
             staff=staff,
         )
+        invalid_ids = []
         for product_id, quantity in cart.items():
             # DBを分けてるからここでくっつけてあげる（親、子）
-            product = Product.objects.get(id=product_id)
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                invalid_ids.append(product_id)
+                continue
             OrderItem.objects.create(
                 order=order,
                 product=product,
@@ -164,8 +202,13 @@ def order_confirm_view(request):
         return redirect("order_done")
     cart_items = []
     total_price = 0
+    invalid_ids = []
     for product_id, quantity in cart.items():
-        product = Product.objects.get(id=product_id)
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            invalid_ids.append(product_id)
+            continue
         subtotal = product.price * quantity
         total_price += subtotal
         cart_items.append(
@@ -175,9 +218,8 @@ def order_confirm_view(request):
                 "subtotal": subtotal,
             }
         )
-    staff_list = staff_list = Staff.objects.filter(
-        is_active=True
-    )  # is_activeがTrueの人だけ取得
+    staff_list = Staff.objects.filter(is_available=True)
+    # is_activeがTrueの人だけ取得
     table_range = range(1, 5)
     # kaunta-_range = range(1,5)
     # テーブルが四個とカウンターが４こ

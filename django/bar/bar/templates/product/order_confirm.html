@@ -14,27 +14,30 @@
 </div>
 <!-- form Djangoに送るための封筒のようなもの -->
 <form method="post" onsubmit="return confirmOrder()">
-{% csrf_token %}
-<label for="table_number">卓番号</label>
-<select name="table_number" required>
-    <option value="" selected disabled>選択してください</option>
-    <!-- selected＝初めはこれに設定、disabled＝一度選ばれたら戻さない -->
-    {% for number in table_range %}
-    <option value="{{ number }}">{{ number }}</option>
-    {% endfor %}
-</select>
-<div>
-    <label for="staff">担当スタッフ</label>
-    <div class="d-flex flex-wrap gap-2">
-        {% for staff in staff_list %}
-        <div class="d-flex flex-column">
-            <img src="{{ staff.photo.url }}" alt="写メ" class="img-photo">
-            <input type="radio" name="staff" id="staff-{{ staff.id }}" value="{{ staff.id }}" class="btn-check" required>
-            <label for="staff-{{ staff.id }}" class="btn btn-outline-primary">{{ staff.name }}</label>
-        </div>   
+    {% csrf_token %}
+    <label for="table_number">卓番号</label>
+    <select name="table_number" required>
+        <option value="" selected disabled>選択してください</option>
+        <!-- selected＝初めはこれに設定、disabled＝一度選ばれたら戻さない -->
+        {% for number in table_range %}
+        <option value="{{ number }}">{{ number }}</option>
         {% endfor %}
+    </select>
+    <div>
+        <label for="staff">担当スタッフ</label>
+        <div class="d-flex flex-wrap gap-2">
+            {% for staff in staff_list %}
+            {% if staff.is_available %}
+            <div class="d-flex flex-column">
+                <img src="{{ staff.photo.url }}" alt="写メ" class="img-photo">
+                <input type="radio" name="staff" id="staff-{{ staff.id }}" value="{{ staff.id }}" class="btn-check"
+                    required>
+                <label for="staff-{{ staff.id }}" class="btn btn-outline-primary">{{ staff.name }}</label>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
     </div>
-</div>
-<button type="submit" class="btn btn-primary m-3">注文を確定する</button>
+    <button type="submit" class="btn btn-primary m-3">注文を確定する</button>
 </form>
 {% endblock content %}

@@ -21,6 +21,7 @@ urlpatterns = [
     path("order_history/", views.StaffCartHistory.as_view(), name="order_history"),
     path("stock/", views.ProductStock.as_view(), name="stock"),
     path("stock/toggle/", views.product_stock_api, name="product_stock_api"),
+    path("staff/toggle/", views.staff_toggle_api, name="staff_toggle_api"),
 ]
 # 役割一つにつき１path
 

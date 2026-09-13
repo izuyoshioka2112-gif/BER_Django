@@ -51,7 +51,7 @@
                 location.reload();
             });
     }
-
+    // 商品管理
     function stock(product_Id) {
         fetch('/stock/toggle/', {
             method: 'POST',
@@ -60,7 +60,7 @@
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
-                product_id: product_Id
+                product_id: product_Id,
             })
         })
             .then(response => response.json())
@@ -68,6 +68,21 @@
                 location.reload();
             });
     }
+
+    // スタッフ管理
+    function staffToggle(staffId) {
+        fetch('/staff/toggle/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ staff_id: staffId })
+        })
+            .then(response => response.json())
+            .then(data => location.reload());
+    }
+
     // データそのものの扱い
     function getCookie(name) {
         let cookieValue = null;
