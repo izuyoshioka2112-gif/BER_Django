@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock title %}BAR</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+
+<body>
+    <nav class="navbar navber-dark bg-success sticky-top">
+        <h2 class="mx-5">BAR</h2>
+        <div class="navber-nav d-flex flex-row ms-auto">
+            <a class="nav-link mx-3">注文一覧</a>
+            <a class="nav-link mx-3">注文履歴</a>
+            <a class="nav-link mx-3">在庫管理</a>
+        </div>
+        <div class="p-4">
+            <h1>{% block h1 %}{% endblock %}</h1>
+    </nav>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    <h1>ログイン</h1>
+    <form method="post" class="p-4 m-4 bg-light border border-success rounded from-group">
+        {% csrf_token %}
+        {% for error in from.errors.values %}
+        {{ error }}
+        {% endfor %}
+        <label>
+            ユーザー名
+        </label>
+        <input class="form-control" name="username">
+        <label>
+            パスワード
+        </label>
+        <input type="password" class="form-control" name="password">
+        <button type="submit" class="btn btn-success mt-4">ログインする</button>
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+<script>
+    function completeOrder(orderId) {
+        const confirmation = confirm('本当に商品を渡しましたか？');
+        if (!confirmation) {
+            return;
+        }
+        fetch('/order/complete/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                order_id: orderId
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                location.reload();
+            });
+    }
+    // 商品管理
+    function stock(product_Id) {
+        fetch('/stock/toggle/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                product_id: product_Id,
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                location.reload();
+            });
+    }
+
+    // スタッフ管理
+    function staffToggle(staffId) {
+        fetch('/staff/toggle/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ staff_id: staffId })
+        })
+            .then(response => response.json())
+            .then(data => location.reload());
+    }
+
+    // データそのものの扱い
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+</html>
