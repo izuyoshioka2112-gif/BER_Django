@@ -1,0 +1,32 @@
+{% extends 'staff_base.html' %}
+
+{% block title %}在庫・タスク管理{% endblock title %}
+
+{% block content %}
+
+<div class="card">
+    <h2>商品管理</h2>
+    {% for item in object_list %}
+    <div class="card-body">
+        <h5 class="card-name">{{item.name}}</h5>
+        <button type="button" onclick="stock({{ item.id }})"
+            class="btn {% if item.is_available %}btn-outline-dark{% else %}btn-danger{% endif %}">
+            {% if item.is_available %}在庫あり{% else %}在庫なし{% endif %}
+        </button>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card">
+    <h2>スタッフ管理</h2>
+    {% for staff in staff_list %}
+    <div class="card-body">
+        <h5 class="card-name">{{staff.name}}</h5>
+        <button type="button" onclick="staffToggle({{ staff.id }})"
+            class="btn {% if staff.is_available %}btn-outline-dark{% else %}btn-danger{% endif %}">
+            {% if staff.is_available %}稼働中{% else %}休憩中{% endif %}
+        </button>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

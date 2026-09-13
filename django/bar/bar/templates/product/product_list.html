@@ -8,9 +8,13 @@
     <div class="card-body">
         <h5 class="card-name">{{item.name}}</h5>
         <div class="card-body">
+            {% if item.is_available %}
             <p class="card-price">{{item.price}}p</p>
             <h6 class="card-category">{{ item.category }}</h6>
             <a href="{% url 'product_detail' item.id %}" class="btn btn-primary">商品追加</a>
+            {% else %}
+            <p class="text-muted bg-secondary bg-opacity-25">只今品切れ中です</p>
+            {% endif %}
         </div>
     </div>
 </div>

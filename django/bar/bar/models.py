@@ -9,6 +9,7 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     price = models.IntegerField()
     category = models.CharField(max_length=100, choices=CATEGORY)
+    is_available = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -19,6 +20,7 @@ class Product(models.Model):
 class Staff(models.Model):
     name = models.CharField(max_length=100)
     photo = models.ImageField(blank=True, null=True)
+    is_available = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -31,6 +33,11 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     # 注文完了しているかどうか
     is_completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        if self.staff:
+            return str(self.staff)
+        return "担当なし"
 
 
 class OrderItem(models.Model):
