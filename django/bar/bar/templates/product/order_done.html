@@ -3,6 +3,17 @@
 {% block title %}注文完了{% endblock title %}
 
 {% block content %}
-<h2>ご注文ありがとうございました</h2>
-<a href="{% url 'product' %}" class="btn btn-primary">商品一覧に戻る</a>
-{% endblock content %}
+<div class="container py-5">
+    <div class="card text-center shadow-sm mx-auto" style="max-width: 32rem;">
+        <div class="card-body p-4 p-md-5">
+            <h2 class="card-title mb-3">ご注文<br>ありがとうございました</h2>
+            <p class="card-text text-secondary mb-4">
+                商品一覧から、引き続き商品をお選びいただけます。
+            </p>
+            <a href="{% url 'product' %}" class="btn btn-dark mt-auto">
+                商品一覧に戻る
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock content %} 

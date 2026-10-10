@@ -1,7 +1,63 @@
+
 .img-photo {
-    width: 100px;
-    height: 100px;
-    min-width: 100%;
-    object-fit: cover;
-    border-radius: 10%;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+
+/* Google Fontsで読み込んだフォントをページ全体に適用 */
+.site-font {
+  font-family: "Noto Serif JP", serif!important;
+}
+/* btn btn-dark mt-auto　ボタン */
+:root{
+    --bg_pink: #fce1ed;
+    --txt_black: #21151c;
+    --txt_white: #ffffff;
+}
+
+/* ヘッダーをピンクに */
+.site-header {
+  background-color: #ee60a7;
+  color: var(--txt_black);
+}
+
+/* ヘッダー内のリンク色 */
+.site-header .nav-link {
+  color: var(--txt_black);
+}
+
+body{
+    background-color: var(--txt_black);
+}
+
+.bgc-text{
+    color: var(--txt_white);
+}
+.product-card{
+    background-color: var(--bg_pink);
+    color: var(--txt_black);
+}
+
+.product-card .text-secondary,
+.product-card .text-muted {
+    color: var(--txt_black);
+}
+.cart-table {
+    /* ブートストラップの変数名（--bs) */
+  --bs-table-bg: var(--bg_pink);
+  --bs-table-color: var(--txt_black);
+  --bs-table-hover-bg: var(--txt_black);
+  --bs-table-hover-color: var(--txt_black);
+}
+
+
+.cart-table-head {
+  --bs-table-bg: var(--txt_black);
+  --bs-table-color: var(--txt_white);
+--bs-table-border-color: var(--txt_black);
 }
