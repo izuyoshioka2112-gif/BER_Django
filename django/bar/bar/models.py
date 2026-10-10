@@ -30,7 +30,7 @@ class Product(models.Model):
 
 class Staff(models.Model):
     name = models.CharField(max_length=100)
-    photo = models.ImageField(blank=True, null=True)
+    photo = models.ImageField(unique=True)
     is_available = models.BooleanField(default=True)
 
     def __str__(self):

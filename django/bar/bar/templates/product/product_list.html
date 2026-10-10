@@ -3,20 +3,37 @@
 {% block title %}商品一覧{% endblock title %}
 
 {% block content %}
-{% for item in object_list %}
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-name">{{item.name}}</h5>
-        <div class="card-body">
-            {% if item.is_available %}
-            <p class="card-price">{{item.price}}p</p>
-            <h6 class="card-category">{{ item.category }}</h6>
-            <a href="{% url 'product_detail' item.id %}" class="btn btn-primary">商品追加</a>
-            {% else %}
-            <p class="text-muted bg-secondary bg-opacity-25">只今品切れ中です</p>
-            {% endif %}
+<div class="container py-4">
+    <h2 class="mb-4 bgc-text">商品一覧</h2>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+        {% for item in object_list %}
+        <div class="col">
+            <div class="card h-100 shadow-sm product-card">
+                <div class="card-body d-flex flex-column">
+    <h5 class="card-title">{{ item.name }}</h5>
+
+    {% if item.is_available %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <p class="card-text text-secondary mb-0">{{ item.category }}</p>
+        <p class="card-text fw-bold mb-0">{{ item.price }}円</p>
+    </div>
+
+    <a href="{% url 'product_detail' item.id %}"
+       class="btn btn-dark mt-auto">
+        商品追加
+    </a>
+    {% else %}
+    <p class="text-muted bg-secondary bg-opacity-25 rounded p-2 mb-0">
+        只今品切れ中です
+    </p>
+    {% endif %}
+</div>
+            </div>
         </div>
+        {% empty %}
+        <p>商品はまだ登録されていません。</p>
+        {% endfor %}
     </div>
 </div>
-{% endfor %}
 {% endblock content %}
